@@ -2,103 +2,97 @@
 
 namespace app\models;
 
-class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
+use Yii;
+use yii\web\IdentityInterface;
+/**
+ * This is the model class for table "user".
+ *
+ * @property int $id
+ * @property string|null $username
+ * @property string|null $password
+ *
+ * @property RepositLike[] $repositLikes
+ */
+class User extends \yii\db\ActiveRecord implements IdentityInterface
 {
-    public $id;
-    public $username;
-    public $password;
-    public $authKey;
-    public $accessToken;
-
-    private static $users = [
-        '100' => [
-            'id' => '100',
-            'username' => 'admin',
-            'password' => 'admin',
-            'authKey' => 'test100key',
-            'accessToken' => '100-token',
-        ],
-        '101' => [
-            'id' => '101',
-            'username' => 'demo',
-            'password' => 'demo',
-            'authKey' => 'test101key',
-            'accessToken' => '101-token',
-        ],
-    ];
-
-
     /**
      * {@inheritdoc}
      */
-    public static function findIdentity($id)
+    public static function tableName()
     {
-        return isset(self::$users[$id]) ? new static(self::$users[$id]) : null;
+        return 'user';
     }
 
     /**
      * {@inheritdoc}
      */
-    public static function findIdentityByAccessToken($token, $type = null)
+    public function rules()
     {
-        foreach (self::$users as $user) {
-            if ($user['accessToken'] === $token) {
-                return new static($user);
-            }
-        }
-
-        return null;
+        return [
+            [['username'], 'string', 'max' => 64],
+            [['password'], 'string', 'max' => 255],
+        ];
     }
 
     /**
-     * Finds user by username
+     * {@inheritdoc}
+     */
+    public function attributeLabels()
+    {
+        return [
+            'id' => 'ID',
+            'username' => 'Username',
+            'password' => 'Password',
+        ];
+    }
+
+    /**
+     * Gets query for [[RepositLikes]].
      *
-     * @param string $username
-     * @return static|null
+     * @return \yii\db\ActiveQuery
      */
-    public static function findByUsername($username)
+    public function getRepositLikes()
     {
-        foreach (self::$users as $user) {
-            if (strcasecmp($user['username'], $username) === 0) {
-                return new static($user);
-            }
-        }
-
-        return null;
+        return $this->hasMany(RepositLike::className(), ['user_id' => 'id']);
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getId()
+	
+	public static function findIdentity($id)
+	{
+		return User::findOne($id);
+	}
+	
+	public function getAuthKey()
+	{
+		
+	}
+	
+	public function validateAuthKey($authKey)
+	{
+		
+	}
+	
+	public static function findIdentityByAccessToken($token, $type = null)
     {
-        return $this->id;
+ 
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getAuthKey()
-    {
-        return $this->authKey;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function validateAuthKey($authKey)
-    {
-        return $this->authKey === $authKey;
-    }
-
-    /**
-     * Validates password
-     *
-     * @param string $password password to validate
-     * @return bool if password provided is valid for current user
-     */
-    public function validatePassword($password)
-    {
-        return $this->password === $password;
-    }
+	
+	public static function findByUsername($username)
+	{
+		return User::find()->where(['username' => $username])->one();
+	}
+	
+	public function validatePassword($password)
+	{
+		return ($this->password == $password) ? true : false;
+	}
+	
+	public function getId()
+	{
+		return $this->id;
+	}
+	
+	public function create()
+	{
+		return $this->save(false);
+	}
 }

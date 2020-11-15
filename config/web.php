@@ -5,6 +5,7 @@ $db = require __DIR__ . '/db.php';
 $baseUrl = str_replace('/web', '', (new Request)->getBaseUrl());
 $config = [
     'id' => 'basic',
+	'defaultRoute' => 'auth/login',
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
     'aliases' => [
@@ -23,6 +24,7 @@ $config = [
         'user' => [
             'identityClass' => 'app\models\User',
             'enableAutoLogin' => true,
+			'loginUrl' => ['auth/login']
         ],
         'errorHandler' => [
             'errorAction' => 'site/error',
@@ -52,6 +54,11 @@ $config = [
             ],
         ],
         
+    ],
+	'modules' => [
+        'cabinet' => [
+            'class' => 'app\modules\cabinet\Module',
+        ],
     ],
     'params' => $params,
 ];
