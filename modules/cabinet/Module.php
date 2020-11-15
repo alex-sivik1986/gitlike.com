@@ -2,6 +2,8 @@
 
 namespace app\modules\cabinet;
 
+use Yii;
+use yii\filters\AccessControl;
 /**
  * cabinet module definition class
  */
