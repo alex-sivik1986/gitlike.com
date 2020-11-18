@@ -8,6 +8,7 @@ use yii\data\ArrayDataProvider;
 use app\models\RepositLike;
 use app\models\Reposit;
 use app\models\User;
+use yii\helpers\ArrayHelper;
 /**
  * Default controller for the `cabinet` module
  */
@@ -19,8 +20,19 @@ class DefaultController extends Controller
      */
     public function actionIndex()
     {
+		$model = new RepositLike();
 		$client = new \Github\Client();
 		$file = $client->api('repo')->all();
+		$ar = $model->find()->where(['user_id' => Yii::$app->user->id])->asArray()->with('reposit')->all();
+	
+	$result = ArrayHelper::merge($ar, $file); 	var_dump($result); die;
+		foreach($file as $value)
+		{
+			if(in_array($value['id'], $ar)) {
+				$value[]['like'] = 
+			}
+		}
+
         $provider = new ArrayDataProvider([
 							'allModels' => $file,
 							'pagination' => [
@@ -33,7 +45,7 @@ class DefaultController extends Controller
 
         return $this->render('index', 
 			[
-				'repositories' => $provider
+				'repositories' => $provider,
 			]);
     }
 	

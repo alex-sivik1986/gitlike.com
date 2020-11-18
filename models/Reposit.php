@@ -3,7 +3,7 @@
 namespace app\models;
 
 use Yii;
-
+use app\models\RepositLike;
 /**
  * This is the model class for table "reposit".
  *
@@ -59,4 +59,17 @@ class Reposit extends \yii\db\ActiveRecord
     {
         return $this->hasMany(RepositLike::className(), ['reposit_id' => 'id']);
     }
+	
+	public function getResult($name,$id_list)
+    {
+        $query = Reposit::find()->where(['name' => $name, 'id_list' => $id_list])->one();
+			if(!empty($query)) 
+			{
+				$result = $query->getRepositLikes()->where(['user_id' => Yii::$app->user->id])->one();
+			} else {
+				$result = 0;
+			}
+		 
+		return $result;
+	}
 }
