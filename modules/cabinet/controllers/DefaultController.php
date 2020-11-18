@@ -40,35 +40,57 @@ class DefaultController extends Controller
 	public function actionLiked()
 	{	
 		$model = new RepositLike();
+		$like = 0;
+		$dislike = 0;
+		
 		if(Yii::$app->request->isAjax) 
 		{
 			$value = Yii::$app->request->post(); 
+			$repository = Reposit::findOne( ["name" => $value['name'], 'id_list' => $value['id']]); 
+			
 			if($value['act'] == 'like'){
-				$repository = Reposit::find( "name = :repository",array(':repository'=>$value['name']) )->one(); 
-				
-				if ($repository->like == null) 
-				{  
+
+				if (!isset($repository->like)) 
+				{  // если впервые лайкают этот репозиторий
 					$repository = new Reposit();
 					$repository->name = $value['name'];
+					$repository->id_list = $value['id'];
+					$repository->dislike = 0; 
 					$repository->like = 1;   
 				} else {
 					$repository->like +=1;
 				}
-					$repository->save();
-					
-					
+					$like = 1;	
 		
-			} else {
+			} elseif($value['act'] == 'dislike') {
+				if (!isset($repository->dislike)) 
+				{  // если впервые дизлайкают этот репозиторий
 					$repository = new Reposit();
 					$repository->name = $value['name'];
-					$repository->like = 0; 	
-                    $repository->save();
-					
-					
+					$repository->id_list = $value['id'];
+					$repository->like = 0; 
+					$repository->dislike = 1;
+				} else {
+					$repository->dislike +=1;
+				}	
+					$dislike = 1;				
 			}
 			
-			
-			
+			if($repository->save())
+			{
+				$rest = $model->findOne( ["reposit_id" => $repository->id, 'user_id' => Yii::$app->user->id]); 
+
+				if(!empty($rest)) {
+                    $rest->delete();
+				}
+					$model->reposit_id = $repository->id;
+					$model->like = $like;
+					$model->dislike = $dislike;
+					$model->user_id = Yii::$app->user->id;
+					$model->save();
+				
+			}
+				
 		}
 		
 	}

@@ -10,6 +10,8 @@ use Yii;
  * @property int $id
  * @property string|null $name
  * @property int|null $like
+ * @property int|null $dislike
+ * @property int|null $id_list
  *
  * @property RepositLike[] $repositLikes
  */
@@ -29,7 +31,7 @@ class Reposit extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['like'], 'integer'],
+            [['like', 'dislike', 'id_list'], 'integer'],
             [['name'], 'string', 'max' => 64],
         ];
     }
@@ -43,6 +45,8 @@ class Reposit extends \yii\db\ActiveRecord
             'id' => 'ID',
             'name' => 'Name',
             'like' => 'Like',
+            'dislike' => 'Dislike',
+            'id_list' => 'Id List',
         ];
     }
 
