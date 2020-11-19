@@ -3,11 +3,12 @@ use yii\grid\GridView;
 use yii\helpers\Html;
 use yii\helpers\Url;
 use app\models\Reposit;
-
+use yii\widgets\Pjax;
 ?>
 <div class="cabinet-default-index">
     <h1>List repositories</h1>
 <ul> 
+
 <?= GridView::widget([
         'dataProvider' => $repositories,
         'columns' => [
@@ -52,22 +53,20 @@ use app\models\Reposit;
 <?php
 $url = Url::to(['default/liked']);
 $js = <<< JS
-
+$(document).ready(function() {
 	$('.like, .dislike').each(function(index) {
 		$(this).on("click", function(){
 			var getkey = $(this).data('id');
 			var getwork = $(this).data('action');
 			var getname = $(this).data('name');
 			$.ajax({
-				url: '$url',
+				url: '/cabinet/default/liked',
 				type: 'POST',
 				data:{id:getkey,act:getwork,name:getname},
 				success: function(data){
-						 $('#realcomment-container').css('display','block');
-						 setTimeout(function(){
-							 $('#realcomment-container').css('display','none');
-						 }, 5000)
-						// $('#realcomment-container').html(data);
+	
+						$('.cabinet-default-index').html(data);
+						console.log(2222222222)
 					},
 					error: function(jqXHR, errMsg) {
 						 alert('Error!');
@@ -75,6 +74,7 @@ $js = <<< JS
 			})
 
 		});
+});
 });
 JS;
 

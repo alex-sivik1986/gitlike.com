@@ -24,7 +24,9 @@ class DefaultController extends Controller
 		$client = new \Github\Client();
 		$file = $client->api('repo')->all();
 		$ar = $model->find()->where(['user_id' => Yii::$app->user->id])->asArray()->with('reposit')->all();
+		$new = $file;
 	if(!empty($ar)) {
+		$new = array();
 			foreach ($file as $git) { 		
 				foreach($ar as $likes) { 
 					if($likes['reposit']['name']===$git['name'] && $likes['reposit']['id_list']==$git['id'])
@@ -132,9 +134,8 @@ class DefaultController extends Controller
 							],
 						]);
 			
-			return $this->render('reload', [
-			 'repositories' => $provider,
-			]);
+		Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+         return ['success' => true];
 				
 		}
 		

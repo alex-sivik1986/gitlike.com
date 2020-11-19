@@ -16,7 +16,7 @@ class AuthController extends  Controller
     public function actionLogin()
     {
         if (!Yii::$app->user->isGuest) {
-            return $this->redirect([\Yii::$app->create->Url('cabinet')]);
+            return $this->response->redirect(['cabinet']);
         }
 
         $model = new LoginForm();
