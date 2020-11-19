@@ -7,7 +7,7 @@ use yii\widgets\Pjax;
 ?>
 <div class="cabinet-default-index">
     <h1>List repositories</h1>
-<ul> 
+
 <?php Pjax::begin(['id' => 'my_pjax']); ?>
 <?= GridView::widget([
         'dataProvider' => $repositories,
@@ -42,16 +42,27 @@ use yii\widgets\Pjax;
 				'class' => 'yii\grid\ActionColumn',
 				'header'=>'Просмотр', 
 				'template' => '{view}',
-			],
+				'buttons' => [
+				'view' => function ($url, $model) { 
+					return Html::a('<span class="glyphicon glyphicon-eye-open"></span>', $url, ['title' => Yii::t('app', 'lead-view')]);
+					},
+				],
+				'urlCreator' => function ($action, $model, $key, $index) { 
+				if ($action === 'view') {
+					$url ='default/reposit?name='.$model['name'].'&id='.$model['id'];
+					return $url;
+				}
+          }
 
         ],
-    ]); ?>
+		 
+    ]
+	]); ?>
 
 <?php Pjax::end(); ?>
-</ul>
+
 </div>
 <?php
-
 $this->registerJs(
    '$("document").ready(function(){ 
 		$("#likes").on("pjax:end", function() {

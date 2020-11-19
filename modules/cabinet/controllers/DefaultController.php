@@ -54,6 +54,15 @@ class DefaultController extends Controller
 			]);
     }
 	
+	public function actionReposit($id)
+	{  
+		$value = Yii::$app->request->get();
+		$client = new \Github\Client();
+		$file = $client->api('repo')->showById($value['id']);
+		var_dump($file); die;
+		
+	}
+	
 	public function actionLiked()
 	{	
 		$model = new RepositLike();
