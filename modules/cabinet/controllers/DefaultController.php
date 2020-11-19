@@ -24,17 +24,20 @@ class DefaultController extends Controller
 		$client = new \Github\Client();
 		$file = $client->api('repo')->all();
 		$ar = $model->find()->where(['user_id' => Yii::$app->user->id])->asArray()->with('reposit')->all();
-	
-	$result = ArrayHelper::merge($ar, $file); 	var_dump($result); die;
-		foreach($file as $value)
-		{
-			if(in_array($value['id'], $ar)) {
-				$value[]['like'] = 
+	if(!empty($ar)) {
+			foreach ($file as $git) { 		
+				foreach($ar as $likes) { 
+					if($likes['reposit']['name']===$git['name'] && $likes['reposit']['id_list']==$git['id'])
+					{   
+						$git['like'] = $likes['like'];
+						$git['dislike'] = $likes['dislike'];
+					}
+				}
+				$new[] = $git;
 			}
-		}
-
-        $provider = new ArrayDataProvider([
-							'allModels' => $file,
+	}
+		$provider = new ArrayDataProvider([
+							'allModels' => $new,
 							'pagination' => [
 								'pageSize' => 50,
 							],
@@ -102,6 +105,36 @@ class DefaultController extends Controller
 					$model->save();
 				
 			}
+			
+		$call = new RepositLike();
+		$client = new \Github\Client();
+		$file = $client->api('repo')->all();
+		$ar = $call->find()->where(['user_id' => Yii::$app->user->id])->asArray()->with('reposit')->all();
+	if(!empty($ar)) {
+			foreach ($file as $git) { 		
+				foreach($ar as $likes) { 
+					if($likes['reposit']['name']===$git['name'] && $likes['reposit']['id_list']==$git['id'])
+					{   
+						$git['like'] = $likes['like'];
+						$git['dislike'] = $likes['dislike'];
+					}
+				}
+				$new[] = $git;
+			}
+	}
+		$provider = new ArrayDataProvider([
+							'allModels' => $new,
+							'pagination' => [
+								'pageSize' => 50,
+							],
+							'sort' => [
+								'attributes' => ['id', 'name'],
+							],
+						]);
+			
+			return $this->render('reload', [
+			 'repositories' => $provider,
+			]);
 				
 		}
 		
