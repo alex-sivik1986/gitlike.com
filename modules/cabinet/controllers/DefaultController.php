@@ -25,9 +25,10 @@ class DefaultController extends Controller
 		$file = $client->api('repo')->all();
 		$ar = $model->find()->where(['user_id' => Yii::$app->user->id])->asArray()->with('reposit')->all();
 		$new = $file;
+		
 	if(!empty($ar)) {
 		$new = array();
-			foreach ($file as $git) { 		
+			foreach ($file as $git) { 	// формируем массив на основе лайков и дизлайков	
 				foreach($ar as $likes) { 
 					if($likes['reposit']['name']===$git['name'] && $likes['reposit']['id_list']==$git['id'])
 					{   
@@ -54,12 +55,23 @@ class DefaultController extends Controller
 			]);
     }
 	
-	public function actionReposit($id)
+	public function actionReposit($name,$id)
 	{  
+		$model = new Reposit();
 		$value = Yii::$app->request->get();
 		$client = new \Github\Client();
-		$file = $client->api('repo')->showById($value['id']);
-		var_dump($file); die;
+		$file = $client->api('repo')->showById($value['id']); 
+		$count = $model->find()->where(['id_list' => $value['id'], 'name' => $value['name']])->asArray()->one();
+		$likes = RepositLike::find()->where(['reposit_id' => $count['id'], 'user_id' => Yii::$app->user->id])->one();
+
+
+		return $this->render('repository',
+			[
+				'model' => $file,
+				'count' => $count,
+				'likes' => $likes
+			]);
+		
 		
 	}
 	

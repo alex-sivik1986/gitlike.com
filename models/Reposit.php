@@ -57,19 +57,7 @@ class Reposit extends \yii\db\ActiveRecord
      */
     public function getRepositLikes()
     {
-        return $this->hasMany(RepositLike::className(), ['reposit_id' => 'id']);
+        return $this->hasMany(RepositLike::className(), ['id' => 'reposit_id']);
     }
 	
-	public function getResult($name,$id_list)
-    {
-        $query = Reposit::find()->where(['name' => $name, 'id_list' => $id_list])->one();
-			if(!empty($query)) 
-			{
-				$result = $query->getRepositLikes()->where(['user_id' => Yii::$app->user->id])->one();
-			} else {
-				$result = 0;
-			}
-		 
-		return $result;
-	}
 }
