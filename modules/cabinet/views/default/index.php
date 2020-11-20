@@ -7,7 +7,12 @@ use yii\widgets\Pjax;
 ?>
 <div class="cabinet-default-index">
     <h1>List repositories</h1>
-
+<!-- Search form -->
+<form method="get" action="/cabinet/default/search" class="form-inline d-flex justify-content-center md-form form-sm mt-0">
+  <i class="fas fa-search" aria-hidden="true"></i>
+  <input class="form-control form-control-sm ml-3 w-75" type="text" placeholder="Search" name="reposit"
+    aria-label="Search">
+</form>
 <?php Pjax::begin(['id' => 'my_pjax',  'enablePushState'=>TRUE]); ?>
 <?= GridView::widget([
         'dataProvider' => $repositories,

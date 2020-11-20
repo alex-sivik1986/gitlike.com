@@ -55,6 +55,46 @@ class DefaultController extends Controller
 			]);
     }
 	
+	public function actionSearch($reposit)
+	{
+		$model = new RepositLike();
+		$client = new \Github\Client();
+		$file = $client->api('search')->repositories($reposit, $sort = 'updated', $order = 'desc'); 
+		
+		$ar = $model->find()->where(['user_id' => Yii::$app->user->id])->asArray()->with('reposit')->all();
+		$new = $file['items'];
+		
+	if(!empty($ar)) {
+		$new = array();
+			foreach ($file['items'] as $git) { 	// формируем массив на основе лайков и дизлайков	
+				foreach($ar as $likes) { 
+					if($likes['reposit']['name']===$git['name'] && $likes['reposit']['id_list']==$git['id'])
+					{   
+						$git['like'] = $likes['like'];
+						$git['dislike'] = $likes['dislike'];
+					}
+				}
+				$new[] = $git;
+			}
+	} 
+		$provider = new ArrayDataProvider([
+							'allModels' => $new,
+							'pagination' => [
+								'pageSize' => 50,
+							],
+							'sort' => [
+								'attributes' => ['id', 'name'],
+							],
+						]);
+
+        return $this->render('index', 
+			[
+				'repositories' => $provider,
+			]);
+		
+		
+	}
+	
 	public function actionReposit($name,$id)
 	{  
 		$model = new Reposit();
